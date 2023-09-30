@@ -1,0 +1,10 @@
+.course-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 14rem);
+}
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+  }
+  
