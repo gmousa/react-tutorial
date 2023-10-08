@@ -8,3 +8,7 @@
     flex-direction: column;
   }
   
+  .course-cards .selected {
+    background-color:lemonchiffon;
+    color: green;
+  }

@@ -6,6 +6,21 @@ const terms = {
    Spring: 'Spring courses...'
 };
 
+const ProductPage = ({products}) => {
+  const [selected, setSelected] = useState([]);
+
+  const toggleSelected = (item) => setSelected(
+    selected.includes(item)
+    ? selected.filter(x => x !== item)
+    : [...selected, item]
+  );
+
+  return (
+    <ProductList products={products} selected={selected} toggleSelected={toggleSelected} />
+  );
+};
+
+
 const TermButton = ({term, selection, setSelection}) => (
   <div>
     <input type="radio" id={term} className="btn-check" checked={term === selection} autoComplete="off"
@@ -24,24 +39,16 @@ const TermSelector = ({selection, setSelection}) => (
   </div>
 );
 
-const CoursePage = ({selection}) => (
-  <div className="card" >
-  { terms[selection] }
-  </div>
-);
-
-const MenuPage = () => {
-  const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
-  return (
-    <div>
-      <TermSelector selection={selection} setSelection={setSelection} />
-      <CoursePage selection={selection} />
-    </div>
-  );
-}
 
 const CourseList = ({ courses }) => 
 {
+  const [selected, setSelected] = useState([]);
+
+  const toggleSelected = (course) => setSelected(
+    selected.includes(course)
+    ? selected.filter(x => x !== course)
+    : [...selected, course]
+  );
   const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
   return (
       <div>
@@ -50,8 +57,8 @@ const CourseList = ({ courses }) =>
           {Object.entries(courses)
           .filter(([id, course]) => course.term === selection)
           .map(([id, { term, number, title, meets}]) => (        
-            <div className="card m-1 p-2" key = {id}>
-              <div className="card-body">
+            <div className={`card m-1 p-2 ${selected.includes(id) ? 'selected' : ''}`} key = {id} onClick={() => toggleSelected(id)}>
+              <div className={`card-body`}>
                 <h5 className="card-title">{term} CS {number}</h5>
                 <p className="card-text">{title}</p>
                 <div className="mt-auto">
