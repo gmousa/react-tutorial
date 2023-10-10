@@ -1,3 +1,4 @@
+
 .course-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, 14rem);
@@ -12,3 +13,8 @@
     background-color:lemonchiffon;
     color: green;
   }
+
+  .btn-outline-dark {
+    float: right;
+}
+
