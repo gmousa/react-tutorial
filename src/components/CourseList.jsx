@@ -1,26 +1,45 @@
 import { useState } from "react";
+import { useEffect } from 'react';
 import TermSelector from './TermSelector';
 import CourseCard from './CourseCard';
 import { terms } from './Constants';
 import Modal from './Modal';
 import Cart from './Cart';
+import { canAddCourse, getConflictingCourses } from './courseUtils';
+
+
+
 
 const CourseList = ({ courses }) => {
   const [selected, setSelected] = useState([]);
   const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
   const selectedCourses = selected.map(courseId => courses[courseId]);
-
+  const [conflicting, setConflicting] = useState({});
 
   const [open, setOpen] = useState(false);
 
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
+  useEffect(() => {
+    setConflicting(getConflictingCourses(courses, selected));
+  }, [selected, courses]);
 
-  const toggleSelected = (course) => setSelected(
-    selected.includes(course)
-    ? selected.filter(x => x !== course)
-    : [...selected, course]
-  );
+  const toggleSelected = (courseId) => {
+    const course = courses[courseId];
+  
+    if (selected.includes(courseId)) {
+      // Remove from cart
+      setSelected(prev => prev.filter(id => id !== courseId));
+    } else {
+      // Check for overlaps before adding
+      if (canAddCourse(course, selected.map(id => courses[id]))) {
+        setSelected(prev => [...prev, courseId]);
+      } else {
+        alert('Cannot add this course due to a time conflict.');
+      }
+    }
+  };
+  
 
   return (
     <div className="course-container">
@@ -42,6 +61,7 @@ const CourseList = ({ courses }) => {
             meets={meets} 
             selected={selected} 
             toggleSelected={toggleSelected} 
+            isConflicting={conflicting[id]}
           />
         ))}
       </div>

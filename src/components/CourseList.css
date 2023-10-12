@@ -8,11 +8,17 @@
     display: flex;
     flex-direction: column;
   }
+
+  .course-cards .conflicting {
+    background-color:rgb(244, 193, 193);
+    color: green;
+  }
   
   .course-cards .selected {
     background-color:lemonchiffon;
     color: green;
   }
+
 
   .btn-outline-dark {
     float: right;
