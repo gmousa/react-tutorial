@@ -42,9 +42,16 @@ const makeResult = (error) => {
 export const useDbUpdate = (path) => {
   const [result, setResult] = useState();
   const updateData = useCallback((value) => {
+    console.log("Attempting to update data at path:", path, "with value:", value);
     update(ref(database, path), value)
-      .then(() => setResult(makeResult()))
-      .catch((error) => setResult(makeResult(error)))
+      .then(() => {
+        console.log("Update successful");
+        setResult(makeResult());
+      })
+      .catch((error) => {
+        console.error("Update failed with error:", error);
+        setResult(makeResult(error));
+      });
   }, [database, path]);
 
   return [updateData, result];
