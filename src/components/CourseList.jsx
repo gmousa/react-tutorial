@@ -1,25 +1,25 @@
-import { useState } from "react";
-import { useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter } from "react-router-dom";
 import TermSelector from './TermSelector';
 import CourseCard from './CourseCard';
 import { terms } from './Constants';
 import Modal from './Modal';
 import Cart from './Cart';
+import { useAuthState } from "../utilities/firebase";
 import { canAddCourse, getConflictingCourses } from './courseUtils';
-
-
-
+import Navigation from "./Navigation";
 
 const CourseList = ({ courses }) => {
   const [selected, setSelected] = useState([]);
   const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
   const selectedCourses = selected.map(courseId => courses[courseId]);
   const [conflicting, setConflicting] = useState({});
-
+  const [user, signInWithGoogle] = useAuthState();
   const [open, setOpen] = useState(false);
 
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
+
   useEffect(() => {
     setConflicting(getConflictingCourses(courses, selected));
   }, [selected, courses]);
@@ -28,10 +28,8 @@ const CourseList = ({ courses }) => {
     const course = courses[courseId];
   
     if (selected.includes(courseId)) {
-      // Remove from cart
       setSelected(prev => prev.filter(id => id !== courseId));
     } else {
-      // Check for overlaps before adding
       if (canAddCourse(course, selected.map(id => courses[id]))) {
         setSelected(prev => [...prev, courseId]);
       } else {
@@ -39,32 +37,37 @@ const CourseList = ({ courses }) => {
       }
     }
   };
-  
 
   return (
-    <div className="course-container">
-      <TermSelector selection={selection} setSelection={setSelection} />
-      <button className="btn btn-outline-dark" onClick={openModal}>Selected Courses<i className="bi bi-cart4"></i></button>
-      <Modal open={open} close={closeModal}>
-        <Cart selected={selectedCourses} courses={courses} />
-      </Modal>
-      <div className="course-cards">
-        {Object.entries(courses)
-        .filter(([id, course]) => course.term === selection)
-        .map(([id, { term, number, title, meets}]) => (
-          <CourseCard 
-            key={id} 
-            id={id} 
-            term={term} 
-            number={number} 
-            title={title} 
-            meets={meets} 
-            selected={selected} 
-            toggleSelected={toggleSelected} 
-            isConflicting={conflicting[id]}
-          />
-        ))}
-      </div>
+    <div className={`${!user ? "not-logged-in" : "logged-in"}`}>
+      <BrowserRouter>
+        <Navigation />
+        <div className="course-container">
+          <TermSelector selection={selection} setSelection={setSelection} />
+          <button className="btn btn-outline-dark" onClick={openModal}>Selected Courses<i className="bi bi-cart4"></i></button>
+          <Modal open={open} close={closeModal}>
+            <Cart selected={selectedCourses} courses={courses} />
+          </Modal>
+          <div className="course-cards">
+            {Object.entries(courses)
+              .filter(([id, course]) => course.term === selection)
+              .map(([id, { term, number, title, meets }]) => (
+                <CourseCard 
+                  key={id} 
+                  id={id} 
+                  term={term} 
+                  number={number} 
+                  title={title} 
+                  meets={meets} 
+                  selected={selected} 
+                  toggleSelected={toggleSelected} 
+                  isConflicting={conflicting[id]}
+                  user={user}
+                />
+              ))}
+          </div>
+        </div>
+      </BrowserRouter>
     </div>
   );
 }
