@@ -76,3 +76,18 @@ export const useAuthState = () => {
   return [user];
 };
 
+export const isAdminUser = (uid) => {
+  return new Promise((resolve, reject) => {
+    onValue(ref(database, 'administrators/' + uid), (snapshot) => {
+      if (snapshot.val() === true) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    }, (error) => {
+      reject(error);
+    });
+  });
+};
+
+

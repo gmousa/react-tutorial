@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CourseEditForm from "./CourseEditForm";
-const CourseCard = ({ id, term, number, title, meets, selected, toggleSelected, isConflicting, user }) => {
+const CourseCard = ({ id, term, number, title, meets, selected, toggleSelected, isConflicting, user, isAdmin}) => {
   const [isEditing, setIsEditing] = useState(false);
 
   if (isEditing) {
@@ -19,7 +19,7 @@ const CourseCard = ({ id, term, number, title, meets, selected, toggleSelected, 
           <p className="card-text">{meets}</p>
         </div>  
       </div>
-      {user && (
+      {isAdmin && (
         <button onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}>Edit</button>
       )}
     </div>

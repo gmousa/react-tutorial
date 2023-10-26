@@ -8,6 +8,7 @@ import Cart from './Cart';
 import { useAuthState } from "../utilities/firebase";
 import { canAddCourse, getConflictingCourses } from './courseUtils';
 import Navigation from "./Navigation";
+import { isAdminUser } from "../utilities/firebase"
 
 const CourseList = ({ courses }) => {
   const [selected, setSelected] = useState([]);
@@ -16,9 +17,25 @@ const CourseList = ({ courses }) => {
   const [conflicting, setConflicting] = useState({});
   const [user, signInWithGoogle] = useAuthState();
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
+
+  useEffect(() => {
+    if (user) {
+      isAdminUser(user.uid)
+        .then(isAdmin => {
+          setIsAdmin(isAdmin);
+        })
+        .catch(error => {
+          console.error("Error checking admin status:", error);
+        });
+    } else {
+      setIsAdmin(false); // Reset isAdmin to false upon sign-out
+    }
+  }, [user]);
 
   useEffect(() => {
     setConflicting(getConflictingCourses(courses, selected));
@@ -63,6 +80,7 @@ const CourseList = ({ courses }) => {
                   toggleSelected={toggleSelected} 
                   isConflicting={conflicting[id]}
                   user={user}
+                  isAdmin={isAdmin}
                 />
               ))}
           </div>
