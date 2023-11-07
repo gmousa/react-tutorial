@@ -81,6 +81,7 @@ const CourseList = ({ courses }) => {
                   isConflicting={conflicting[id]}
                   user={user}
                   isAdmin={isAdmin}
+                  data-cy={term} 
                 />
               ))}
           </div>
